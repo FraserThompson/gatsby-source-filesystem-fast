@@ -67,11 +67,11 @@ async function processRemoteNode({
   fileNode.internal.description = `File "${url}"`
   fileNode.url = url
   fileNode.parent = parentNodeId
-  // Override the default plugin as gatsby-source-filesystem needs to
+  // Override the default plugin as gatsby-source-filesystem-fast needs to
   // be the owner of File nodes or there'll be conflicts if any other
   // File nodes are created through normal usages of
-  // gatsby-source-filesystem.
-  await createNode(fileNode, { name: `gatsby-source-filesystem` })
+  // gatsby-source-filesystem-fast.
+  await createNode(fileNode, { name: `gatsby-source-filesystem-fast` })
 
   return fileNode
 }
@@ -121,7 +121,7 @@ module.exports = function createRemoteFileNode({
   }
   if (typeof getCache === `function`) {
     // use cache of this plugin and not cache of function caller
-    cache = getCache(`gatsby-source-filesystem`)
+    cache = getCache(`gatsby-source-filesystem-fast`)
   }
   if (typeof cache !== `object`) {
     throw new Error(

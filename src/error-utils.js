@@ -3,7 +3,7 @@ export const CODES = {
   MissingResource: `10001`,
 }
 
-export const pluginPrefix = `gatsby-source-filesystem`
+export const pluginPrefix = `gatsby-source-filesystem-fast`
 
 export function prefixId(id) {
   return `${pluginPrefix}_${id}`
