@@ -21,7 +21,7 @@ nodes from which you can query an HTML representation of the markdown.
 
 ## Install
 
-`npm install gatsby-source-filesystem`
+`npm install gatsby-source-filesystem-fast`
 
 ## Difference between this and gatsby-source-filesystem
 
@@ -80,14 +80,14 @@ module.exports = {
     // "pages" directory for Markdown files and a "data" directory
     // for `.json`, `.yaml`, `.csv`.
     {
-      resolve: `gatsby-source-filesystem`,
+      resolve: `gatsby-source-filesystem-fast`,
       options: {
         name: `pages`,
         path: `${__dirname}/src/pages/`,
       },
     },
     {
-      resolve: `gatsby-source-filesystem`,
+      resolve: `gatsby-source-filesystem-fast`,
       options: {
         name: `data`,
         path: `${__dirname}/src/data/`,
@@ -153,7 +153,7 @@ To filter by the `name` you specified in the config, use `sourceInstanceName`:
 
 ## Helper functions
 
-`gatsby-source-filesystem` exports three helper functions:
+`gatsby-source-filesystem-fast` exports three helper functions:
 
 - `createFilePath`
 - `createRemoteFileNode`
@@ -172,7 +172,7 @@ createFilePath({
   // The parameter from `onCreateNode` should be passed in here
   getNode,
   // The base path for your files.
-  // It is relative to the `options.path` setting in the `gatsby-source-filesystem` entries of your `gatsby-config.js`.
+  // It is relative to the `options.path` setting in the `gatsby-source-filesystem-fast` entries of your `gatsby-config.js`.
   // Defaults to `src/pages`. For the example above, you'd use `src/content`.
   basePath,
   // Whether you want your file paths to contain a trailing `/` slash
@@ -184,7 +184,7 @@ createFilePath({
 #### Example usage
 
 ```javascript
-const { createFilePath } = require(`gatsby-source-filesystem`)
+const { createFilePath } = require(`gatsby-source-filesystem-fast`)
 
 exports.onCreateNode = ({ node, getNode, actions }) => {
   const { createNodeField } = actions
@@ -251,7 +251,7 @@ createRemoteFileNode({
 The following example is pulled from [gatsby-source-wordpress](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-source-wordpress). Downloaded files are created as `File` nodes and then linked to the WordPress Media node, so it can be queried both as a regular `File` node and from the `localFile` field in the Media node.
 
 ```javascript
-const { createRemoteFileNode } = require(`gatsby-source-filesystem`)
+const { createRemoteFileNode } = require(`gatsby-source-filesystem-fast`)
 
 exports.downloadMediaFiles = ({
   nodes,
@@ -347,7 +347,7 @@ exports.sourceNodes = async ({ actions, createNodeId, getCache }, config) => {
 }
 
 // create-nodes.js
-const { createFileNodeFromBuffer } = require(`gatsby-source-filesystem`)
+const { createFileNodeFromBuffer } = require(`gatsby-source-filesystem-fast`)
 const createNodeHelpers = require(`gatsby-node-helpers`).default
 
 const { createNodeFactory } = createNodeHelpers({ typePrefix: `mysql` })
