@@ -162,6 +162,7 @@ exports.pluginOptionsSchema = ({ Joi }) =>
   Joi.object({
     name: Joi.string(),
     path: Joi.string(),
+    noHashing: Joi.boolean(),
     ignore: Joi.array().items(
       Joi.string(),
       Joi.object().regex(),
