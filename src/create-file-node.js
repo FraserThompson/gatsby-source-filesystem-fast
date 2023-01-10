@@ -4,6 +4,7 @@ const mime = require(`mime`)
 const prettyBytes = require(`pretty-bytes`)
 
 const { createContentDigest, slash } = require(`gatsby-core-utils`)
+const { hashFile } = require("./utils")
 
 exports.createFileNode = async (
   pathToFile,
@@ -34,7 +35,8 @@ exports.createFileNode = async (
       description: `Directory "${path.relative(process.cwd(), slashed)}"`,
     }
   } else {
-    const contentDigest = stats.size.toString() + stats.mtimeMs.toString()
+    //const contentDigest = stats.size.toString() + stats.mtimeMs.toString()
+    const contentDigest = await hashFile(slashedFile.absolutePath)
     const mediaType = mime.getType(slashedFile.ext)
     internal = {
       contentDigest,

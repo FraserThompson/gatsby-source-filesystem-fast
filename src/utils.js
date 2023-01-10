@@ -1,6 +1,8 @@
 const path = require(`path`)
 const Url = require(`url`)
+const fs = require(`fs-extra`)
 const { createFilePath } = require(`gatsby-core-utils`)
+const { createMD5 } = require('hash-wasm');
 
 /**
  * getParsedPath
@@ -40,6 +42,40 @@ export function getRemoteFileExtension(url) {
 export function getRemoteFileName(url) {
   return decodeURIComponent(getParsedPath(url).name)
 }
+
+/**
+ * hashFile
+ * --
+ * Takes a file path and returns a hash
+ * 
+ * 
+ * @param {String}          path 
+ * @returns {String}        hash
+ */
+export async function hashFile(path) {
+  
+  const hash = await createMD5();
+
+  return new Promise((resolve, reject) => {
+    hash.init();
+
+    const input = fs.createReadStream(path)
+
+    input.on('error', (err) => {
+      reject(err)
+    })
+
+    input.on('data', (data) => {
+      hash.update(data)
+    })
+
+    input.on('end', () => {
+      resolve(hash.digest('hex'))
+    })
+
+  })
+}
+
 
 // createFilePath should be imported from `gatsby-core-utils`
 // but some plugins already do import it from `gatsby-source-filesystem/utils`
