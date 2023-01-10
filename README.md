@@ -3,15 +3,13 @@
 A Gatsby source plugin for sourcing data into your Gatsby application
 from your local filesystem.
 
-It is functionally identical to `gatsby-source-filesystem` but sacrifices 
-some robustness for speed. This will significantly improve build times on
-sites with many large files. How it does this and an example of its 
-effectiveness are detailed below.
+It is functionally identical to `gatsby-source-filesystem`, just faster. 
+This will significantly improve build times on sites with many large files. 
+How it does this and performance benchmarks are detailed below.
 
 If you don't have issues with build times currently (specifically time 
 spent on the `source and transform nodes` build step), you can probably
-stick with `gatsby-source-filesystem`. This will likely only have a 
-benefit for weird edge-case sites.
+stick with `gatsby-source-filesystem`.
 
 The plugin creates `File` nodes from files. The various "transformer"
 plugins can transform `File` nodes into various other types of data e.g.
@@ -25,17 +23,39 @@ nodes from which you can query an HTML representation of the markdown.
 
 ## Difference between this and gatsby-source-filesystem
 
-Each `gatsby` graphql node comes with a `contentDigest`. This is used to
-determine whether the file has changed (See: https://www.gatsbyjs.com/docs/reference/graphql-data-layer/node-interface/).
+The difference is in how the file is hashed.
 
-* `gatsby-source-filesystem` makes an MD5 hash of each files contents.
-* `gatsby-source-filesystem-fast` uses size and modification time instead.
+Each `gatsby` graphql node comes with a `contentDigest`, which is hash of
+the files contents. This is used to determine whether the file has changed
+(See: https://www.gatsbyjs.com/docs/reference/graphql-data-layer/node-interface/).
 
-The upshot is if you have many large files your build times will improve
-**significantly** because it no longer has to compute an MD5 hash on each
-file.
+`gatsby-source-filesystem-fast` has two modes of operation.
 
-### Performance comparison
+### Faster hashing (default)
+
+`gatsby-source-filesystem-fast` uses a faster hashing library ([hash-wasm](https://github.com/Daninet/hash-wasm))
+to calculate the MD5 hash of each file.
+
+#### Performance comparison
+
+Test environment: 4774 files, 3663 images ranging from 1-3mb each, and 
+284 MP3 files ranging from ~20-120mb.
+
+| Source plugin                   | Time spent sourcing and transforming files (cold) |
+| ------------------------------- | ------------------------------------------------- |
+| `gatsby-source-filesystem`      | 781 seconds                                       |
+| `gatsby-source-filesystem-fast` | 494 seconds                                       |
+
+### No hashing
+
+`gatsby-source-filesystem-fast` doesn't hash the files, and instead uses
+size and modification time.
+
+To enable add `noHashing: true` to your plugin definition in `gatsby-config.js`.
+
+This is **significantly** faster, but comes with some caveats (see below).
+
+#### Performance comparison
 
 Test environment: 4774 files, 3663 images ranging from 1-3mb each, and 
 284 MP3 files ranging from ~20-120mb.
@@ -45,7 +65,7 @@ Test environment: 4774 files, 3663 images ranging from 1-3mb each, and
 | `gatsby-source-filesystem`      | 781 seconds                                       |
 | `gatsby-source-filesystem-fast` | 10 seconds                                        |
 
-### Downsides of this approach
+#### Downsides of this approach
 
 An MD5 hash is a very robust way to "fingerprint" the file: If the file contents 
 change the MD5 hash **will** change.
@@ -58,13 +78,10 @@ However this method is robust enough for most cases, and is used as a file
 fingerprinting method by other file transfer tools such as 
 [CDC File Transfer by Google](https://github.com/google/cdc-file-transfer).
 
-### Migration considerations
-
-Before switching your site over to `gatsby-source-filesystem-fast` you 
-should bear in mind that this will result in the re-generation of all 
-your static assets into different directories. This has clientside caching 
-and deploy implications (for example if your site is deployed to an environment
-where you pay for inbound data).
+You should also bear in mind that this will result in the regeneration of all your
+static assets into different directories. This has clientside caching and deploy 
+implications (for example if your site is deployed to an environment where you 
+pay for inbound data).
 
 ## How to use
 
@@ -92,6 +109,7 @@ module.exports = {
         name: `data`,
         path: `${__dirname}/src/data/`,
         ignore: [`**/\.*`], // ignore files starting with a dot
+        noHashing: true
       },
     },
   ],

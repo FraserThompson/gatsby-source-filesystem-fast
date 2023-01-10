@@ -35,8 +35,12 @@ exports.createFileNode = async (
       description: `Directory "${path.relative(process.cwd(), slashed)}"`,
     }
   } else {
-    //const contentDigest = stats.size.toString() + stats.mtimeMs.toString()
-    const contentDigest = await hashFile(slashedFile.absolutePath)
+    let contentDigest
+    if (pluginOptions.noHashing) {
+      contentDigest = stats.size.toString() + stats.mtimeMs.toString().replace(".", "")
+    } else {
+      contentDigest = await hashFile(slashedFile.absolutePath)
+    }
     const mediaType = mime.getType(slashedFile.ext)
     internal = {
       contentDigest,
