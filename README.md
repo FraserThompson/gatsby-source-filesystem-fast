@@ -1,5 +1,9 @@
 # gatsby-source-filesystem-fast
 
+**DEPRECATED: As of `gatsby-source-filesystem` 5.5.0 this behavior is 
+implemented in the form of the `fastHash` option, so this module is
+no longer necessary.**
+
 A Gatsby source plugin for sourcing data into your Gatsby application
 from your local filesystem.
 
